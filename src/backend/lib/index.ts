@@ -13,7 +13,6 @@ import {
   updateDoc as updateDocFB,
   doc,
   deleteDoc,
-  getDoc as getDocFB,
 } from "firebase/firestore";
 import {
   deleteObject,
@@ -21,7 +20,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { set, ref as DBRef, update } from "firebase/database";
+import { set, ref as DBRef, update, child, get } from "firebase/database";
 
 type DocProps = {
   collection: "parking-slot" | "entries";
@@ -33,10 +32,22 @@ export const setRealTimeDB = (path: string, values: {}) => {
 };
 
 export const updateRealTimeDB = (path: string, values: {}) => {
-  const updates = {} as any;
-  updates[path] = values;
+  const dbRef = DBRef(db);
 
-  return update(DBRef(db), updates);
+  get(child(dbRef, path))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.toJSON();
+
+        const updates = {} as any;
+        updates[path] = { ...data, ...values };
+
+        update(DBRef(db), updates);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 };
 
 export const addDoc = async (

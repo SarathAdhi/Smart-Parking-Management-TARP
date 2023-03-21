@@ -1,30 +1,36 @@
 import { updateRealTimeDB } from "@/backend/lib";
 import { Slot } from "@/common/types/parking-slot";
 import Button from "antd/lib/button";
+import Tag from "antd/lib/tag";
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 
 type Props = {
   title: string;
   identifer: string;
   dbKey: string;
   slots: Slot;
+  handleReserveSlot: (id: string) => void;
 };
 
-const ParkingSlots: React.FC<Props> = ({ title, identifer, dbKey, slots }) => {
-  const [reserveSlotId, setReserveSlotId] = useState("");
-
+const ParkingSlots: React.FC<Props> = ({
+  title,
+  identifer,
+  dbKey,
+  handleReserveSlot,
+  slots,
+}) => {
   function handleReservation(id: number) {
-    console.log(`slot/${dbKey}/${id}`);
     updateRealTimeDB(`slot/${dbKey}/${id}`, {
       isReserved: true,
-      isOccupied: false,
     });
+
+    handleReserveSlot(`${dbKey}_${id}`);
   }
 
   return (
-    <div>
-      <h3>{title}</h3>
+    <div className="grid gap-2">
+      <h3>{title} | Reserve your slot</h3>
 
       <div className="grid grid-cols-2">
         <Button
@@ -40,6 +46,12 @@ const ParkingSlots: React.FC<Props> = ({ title, identifer, dbKey, slots }) => {
               src="/car.png"
               alt="Slot Occupied"
             />
+          )}
+
+          {slots[1].isOccupied && (
+            <Tag className="text-center" color="purple">
+              Reserved
+            </Tag>
           )}
 
           <h5 className="absolute bottom-2 right-2">{identifer}1</h5>
@@ -60,6 +72,12 @@ const ParkingSlots: React.FC<Props> = ({ title, identifer, dbKey, slots }) => {
             />
           )}
 
+          {slots[2].isOccupied && (
+            <Tag className="text-center" color="purple">
+              Reserved
+            </Tag>
+          )}
+
           <h5 className="absolute bottom-2 right-2">{identifer}2</h5>
         </Button>
 
@@ -76,6 +94,12 @@ const ParkingSlots: React.FC<Props> = ({ title, identifer, dbKey, slots }) => {
               src="/car.png"
               alt="Slot Occupied"
             />
+          )}
+
+          {slots[3].isOccupied && (
+            <Tag className="text-center" color="purple">
+              Reserved
+            </Tag>
           )}
 
           <h5 className="absolute bottom-2 right-2">{identifer}3</h5>
@@ -96,11 +120,15 @@ const ParkingSlots: React.FC<Props> = ({ title, identifer, dbKey, slots }) => {
             />
           )}
 
+          {slots[4].isOccupied && (
+            <Tag className="text-center" color="purple">
+              Reserved
+            </Tag>
+          )}
+
           <h5 className="absolute bottom-2 right-2">{identifer}4</h5>
         </Button>
       </div>
-
-      <Button>Reserve Slot</Button>
     </div>
   );
 };
