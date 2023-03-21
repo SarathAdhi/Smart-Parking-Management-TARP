@@ -1,4 +1,5 @@
 import {
+  db,
   dbFireStore,
   entriesCollectionRef,
   parkingCollectionRef,
@@ -20,10 +21,22 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+import { set, ref as DBRef, update } from "firebase/database";
 
 type DocProps = {
   collection: "parking-slot" | "entries";
   values: {};
+};
+
+export const setRealTimeDB = (path: string, values: {}) => {
+  set(DBRef(db, path), values);
+};
+
+export const updateRealTimeDB = (path: string, values: {}) => {
+  const updates = {} as any;
+  updates[path] = values;
+
+  return update(DBRef(db), updates);
 };
 
 export const addDoc = async (

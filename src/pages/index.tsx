@@ -28,6 +28,7 @@ export default function Home() {
         <ParkingSlots
           title="First Floor"
           identifer="F"
+          dbKey="first"
           slots={parkingSlots.first}
         />
       ),
@@ -39,6 +40,7 @@ export default function Home() {
         <ParkingSlots
           title="Second Floor"
           identifer="S"
+          dbKey="second"
           slots={parkingSlots.second}
         />
       ),
