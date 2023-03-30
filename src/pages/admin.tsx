@@ -33,7 +33,7 @@ const AdminPanel = () => {
     toast.error("Invalid credentials");
   }
 
-  const url = typeof window !== "undefined" ? window.location.href : "";
+  const url = typeof window !== "undefined" ? window.location.origin : "";
 
   console.log({ url });
 
