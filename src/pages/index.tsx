@@ -58,7 +58,11 @@ export default function Home() {
   if (!parkingSlots) return <LoadingPage />;
 
   if (!(vehicleNumber && gate))
-    return <div>Not Authenticated. No vehicle number found.</div>;
+    return (
+      <PageLayout title="No vehicle number found">
+        <h2>No vehicle number found.</h2>
+      </PageLayout>
+    );
 
   function handleReserveSlot(slot: string) {
     updateRealTimeDB(`vehicle/${vehicleNumber}`, {

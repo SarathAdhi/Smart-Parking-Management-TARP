@@ -6,6 +6,7 @@ import Input from "antd/lib/input";
 import Button from "antd/lib/button";
 import Select from "antd/lib/select";
 import { toast } from "react-hot-toast";
+import { ElementWrapper } from "@/common/components/ElementWrapper";
 
 const AdminPanel = () => {
   const router = useRouter();
@@ -41,50 +42,62 @@ const AdminPanel = () => {
       {!isAuthenticated && (
         <form
           onSubmit={handleAdminLogin}
-          className="grid gap-2 place-items-start"
+          className="grid gap-4 place-items-start"
         >
-          <Input
-            name="username"
-            onChange={(e) =>
-              setAdminLogin({
-                ...adminLogin,
-                username: e.target.value,
-              })
-            }
-          />
+          <ElementWrapper label="Username">
+            <Input
+              name="username"
+              placeholder="Enter the username"
+              onChange={(e) =>
+                setAdminLogin({
+                  ...adminLogin,
+                  username: e.target.value,
+                })
+              }
+            />
+          </ElementWrapper>
 
-          <Input
-            name="password"
-            type="password"
-            onChange={(e) =>
-              setAdminLogin({
-                ...adminLogin,
-                password: e.target.value,
-              })
-            }
-          />
+          <ElementWrapper label="Password">
+            <Input
+              name="password"
+              type="password"
+              placeholder="Enter the password"
+              onChange={(e) =>
+                setAdminLogin({
+                  ...adminLogin,
+                  password: e.target.value,
+                })
+              }
+            />
+          </ElementWrapper>
 
           <Button htmlType="submit">Login</Button>
         </form>
       )}
 
       {isAuthenticated && (
-        <div className="grid gap-2">
-          <Select
-            className="w-full"
-            defaultValue={1}
-            onChange={setGateNumber}
-            options={[
-              { value: 1, label: 1 },
-              { value: 2, label: 2 },
-            ]}
-          />
+        <div className="grid gap-4">
+          <ElementWrapper label="Floor Number">
+            <Select
+              className="w-full"
+              placeholder="Floor number"
+              defaultValue={1}
+              onChange={setGateNumber}
+              options={[
+                { value: 1, label: 1 },
+                { value: 2, label: 2 },
+              ]}
+            />
+          </ElementWrapper>
 
-          <Input
-            name="vehiclenumber"
-            value={vehicleNumber}
-            onChange={(e) => setVehicleNumber(e.target.value.toUpperCase())}
-          />
+          <ElementWrapper label="Vehicle Number">
+            <Input
+              name="vehiclenumber"
+              placeholder="Vehicle Number"
+              value={vehicleNumber}
+              onChange={(e) => setVehicleNumber(e.target.value.toUpperCase())}
+            />
+          </ElementWrapper>
 
           {vehicleNumber && (
             <QRCode
