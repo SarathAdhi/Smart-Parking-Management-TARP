@@ -48,7 +48,7 @@ const ParkingSlots: React.FC<Props> = ({
             />
           )}
 
-          {slots[1].isOccupied && (
+          {!slots[1].isOccupied && slots[1].isReserved && (
             <Tag className="text-center" color="purple">
               Reserved
             </Tag>
@@ -72,7 +72,7 @@ const ParkingSlots: React.FC<Props> = ({
             />
           )}
 
-          {slots[2].isOccupied && (
+          {!slots[2].isOccupied && slots[2].isReserved && (
             <Tag className="text-center" color="purple">
               Reserved
             </Tag>
@@ -96,7 +96,7 @@ const ParkingSlots: React.FC<Props> = ({
             />
           )}
 
-          {slots[3].isOccupied && (
+          {!slots[3].isOccupied && slots[3].isReserved && (
             <Tag className="text-center" color="purple">
               Reserved
             </Tag>
@@ -120,7 +120,7 @@ const ParkingSlots: React.FC<Props> = ({
             />
           )}
 
-          {slots[4].isOccupied && (
+          {!slots[4].isOccupied && slots[4].isReserved && (
             <Tag className="text-center" color="purple">
               Reserved
             </Tag>

@@ -4,6 +4,7 @@ import LoadingPage from "@/common/components/LoadingPage";
 import { PageLayout } from "@/common/layouts/PageLayout";
 import { ParkingSlot } from "@/common/types/parking-slot";
 import ParkingSlots from "@/modules/Home/ParkingSlots";
+import Button from "antd/lib/button";
 import Tabs, { TabsProps } from "antd/lib/tabs";
 import { ref, onValue, get, child } from "firebase/database";
 import { Timestamp } from "firebase/firestore";
@@ -30,6 +31,11 @@ export default function Home() {
     if (vehicleNumber && gate) {
       const dbRef = ref(db);
 
+      updateRealTimeDB(`vehicle/${vehicleNumber}`, {
+        isLeft: false,
+        isActive: true,
+      });
+
       get(child(dbRef, `vehicle/${vehicleNumber}`))
         .then((snapshot) => {
           if (!snapshot.exists()) {
@@ -40,7 +46,7 @@ export default function Home() {
             });
           } else {
             const data = snapshot.toJSON() as any;
-            setUserBookedSlot(data?.slot || "");
+            if (data?.isActive) setUserBookedSlot(data?.slot || "");
           }
         })
         .catch((error) => {
@@ -59,7 +65,26 @@ export default function Home() {
       slot,
     });
 
+    updateRealTimeDB(`slot/gate${gate}`, {
+      isActive: true,
+    });
+
     setUserBookedSlot(slot);
+  }
+
+  function handleExit() {
+    updateRealTimeDB(`vehicle/${vehicleNumber}`, {
+      isActive: false,
+      isLeft: true,
+      exitTime: Timestamp.now(),
+    });
+
+    updateRealTimeDB(`slot/${userBookedSlot.split("_").join("/")}`, {
+      isReserved: false,
+      isOccupied: false,
+    });
+
+    setUserBookedSlot("");
   }
 
   const items: TabsProps["items"] = [
@@ -98,10 +123,14 @@ export default function Home() {
       {!userBookedSlot ? (
         <Tabs defaultActiveKey="1" centered items={items} />
       ) : (
-        <h3>
-          You Booked {userBookedDetails[0]} floor and slot{" "}
-          {userBookedDetails[1]}
-        </h3>
+        <div>
+          <h3>
+            You Booked {userBookedDetails[0]} floor and slot{" "}
+            {userBookedDetails[1]}
+          </h3>
+
+          <Button onClick={handleExit}>Exit and Pay</Button>
+        </div>
       )}
     </PageLayout>
   );
