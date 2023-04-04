@@ -77,10 +77,10 @@ const AdminPanel = () => {
 
       {isAuthenticated && (
         <div className="grid gap-4">
-          <ElementWrapper label="Floor Number">
+          <ElementWrapper label="Gate Number">
             <Select
               className="w-full"
-              placeholder="Floor number"
+              placeholder="Gate number"
               defaultValue={1}
               onChange={setGateNumber}
               options={[
