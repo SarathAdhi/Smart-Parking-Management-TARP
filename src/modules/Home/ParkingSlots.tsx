@@ -104,30 +104,6 @@ const ParkingSlots: React.FC<Props> = ({
 
           <h5 className="absolute bottom-2 right-2">{identifer}3</h5>
         </Button>
-
-        <Button
-          type="dashed"
-          onClick={() => handleReservation(4)}
-          disabled={slots[4].isOccupied || slots[4].isReserved}
-          className="slot-container"
-        >
-          {slots[4].isOccupied && (
-            <Image
-              width={200}
-              height={200}
-              src="/car.png"
-              alt="Slot Occupied"
-            />
-          )}
-
-          {!slots[4].isOccupied && slots[4].isReserved && (
-            <Tag className="text-center" color="purple">
-              Reserved
-            </Tag>
-          )}
-
-          <h5 className="absolute bottom-2 right-2">{identifer}4</h5>
-        </Button>
       </div>
     </div>
   );

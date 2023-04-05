@@ -10,6 +10,8 @@ import { ref, onValue, get, child } from "firebase/database";
 import { Timestamp } from "firebase/firestore";
 import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
+import { getMinutes } from "../utils/diff";
+import Popconfirm from "antd/lib/popconfirm";
 
 export default function Home() {
   const router = useRouter();
@@ -18,6 +20,8 @@ export default function Home() {
 
   const [parkingSlots, setParkingSlots] = useState<ParkingSlot>();
   const [userBookedSlot, setUserBookedSlot] = useState("");
+  const [userBookedSlotTiming, setUserBookedSlotTiming] = useState<Timestamp>();
+  const [parkingCost, setParkingCost] = useState(0);
 
   useEffect(() => {
     const slotsRef = ref(db, "slot/");
@@ -46,7 +50,10 @@ export default function Home() {
             });
           } else {
             const data = snapshot.toJSON() as any;
-            if (data?.isActive) setUserBookedSlot(data?.slot || "");
+            if (data?.isActive) {
+              setUserBookedSlot(data?.slot || "");
+              setUserBookedSlotTiming(data?.entryTime);
+            }
           }
         })
         .catch((error) => {
@@ -65,8 +72,11 @@ export default function Home() {
     );
 
   function handleReserveSlot(slot: string) {
+    const entryTime = Timestamp.now();
+
     updateRealTimeDB(`vehicle/${vehicleNumber}`, {
       slot,
+      entryTime,
     });
 
     updateRealTimeDB(`slot/gate${gate}`, {
@@ -74,13 +84,23 @@ export default function Home() {
     });
 
     setUserBookedSlot(slot);
+    setUserBookedSlotTiming(entryTime);
+  }
+
+  function getNumberOfMinutes() {
+    const diff = getMinutes(userBookedSlotTiming!);
+    console.log({ diff });
+    setParkingCost(diff * 25);
   }
 
   function handleExit() {
+    const exitTime = Timestamp.now();
+
     updateRealTimeDB(`vehicle/${vehicleNumber}`, {
       isActive: false,
       isLeft: true,
-      exitTime: Timestamp.now(),
+      exitTime,
+      slot: "",
     });
 
     updateRealTimeDB(`slot/${userBookedSlot.split("_").join("/")}`, {
@@ -123,17 +143,34 @@ export default function Home() {
   const userBookedDetails = userBookedSlot?.split("_");
 
   return (
-    <PageLayout title="Home">
-      {!userBookedSlot ? (
-        <Tabs defaultActiveKey="1" centered items={items} />
-      ) : (
+    <PageLayout title="Home" className="grid">
+      <Tabs defaultActiveKey="1" centered items={items} />
+
+      {userBookedSlot && (
         <div>
           <h3>
-            You Booked {userBookedDetails[0]} floor and slot{" "}
+            You Booked {userBookedDetails[0].slice(0, 1).toUpperCase()}
             {userBookedDetails[1]}
           </h3>
 
-          <Button onClick={handleExit}>Exit and Pay</Button>
+          <Popconfirm
+            title="Payment Portal"
+            description={
+              `Your parking cost is: ${parkingCost.toFixed(2)}` +
+              " Pay using any UPI"
+            }
+            onConfirm={handleExit}
+            okText="Pay"
+            cancelText="Cancel"
+            okButtonProps={{
+              type: "default",
+            }}
+            cancelButtonProps={{
+              danger: true,
+            }}
+          >
+            <Button onClick={getNumberOfMinutes}>Exit Now</Button>
+          </Popconfirm>
         </div>
       )}
     </PageLayout>
