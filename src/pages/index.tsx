@@ -12,6 +12,7 @@ import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
 import { getMinutes } from "../utils/diff";
 import Popconfirm from "antd/lib/popconfirm";
+import { toast } from "react-hot-toast";
 
 export default function Home() {
   const router = useRouter();
@@ -109,6 +110,8 @@ export default function Home() {
     });
 
     setUserBookedSlot("");
+
+    toast.success("Received Payment successfully");
   }
 
   const items: TabsProps["items"] = [
